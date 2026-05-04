@@ -19,14 +19,16 @@ components:
   - name: runtime
     container:
       image: mcr.microsoft.com/dotnet/sdk:latest
-      memoryRequest: 1Gi
-      memoryLimit: 2Gi
-      cpuRequest: 500m
-      cpuLimit: 1000m
+      memoryRequest: 512Mi
+      memoryLimit: 1Gi
+      cpuRequest: 100m
+      cpuLimit: 500m
       mountSources: true
       sourceMapping: /projects
       env:
         - name: HOME
+          value: /tmp/home
+        - name: DOTNET_CLI_HOME
           value: /tmp/home
         - name: NUGET_PACKAGES
           value: /tmp/.nuget/packages
@@ -34,6 +36,10 @@ components:
           value: /projects/workspace-backend/workspace-backend.code-workspace
       volumeMounts:
         - name: nuget
+          path: /tmp/.nuget/packages
+      command:
+        - sleep
+        - infinity
       endpoints:
         - name: http-5122
           targetPort: 5122
@@ -43,6 +49,10 @@ components:
           targetPort: 7082
           exposure: public
           protocol: https
+        - name: ssh-2222
+          targetPort: 2222
+          exposure: public
+          protocol: tcp
   - volume:
       size: 1Gi
     name: projects

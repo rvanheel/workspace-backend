@@ -1,0 +1,51 @@
+schemaVersion: 2.3.0
+attributes:
+  controller.devfile.io/storage-type: per-workspace
+metadata:
+  name: workspace-backend
+  displayName: Backend Development
+  description: A C# development environment with Git repo
+
+projects:
+  - name: workspace-backend
+    git:
+      checkoutFrom:
+        remote: origin
+        revision: main
+      remotes:
+        origin: https://github.com/rvanheel/workspace-backend.git
+
+components:
+  - name: runtime
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:latest
+      memoryRequest: 1Gi
+      memoryLimit: 2Gi
+      cpuRequest: 500m
+      cpuLimit: 1000m
+      mountSources: true
+      sourceMapping: /projects
+      env:
+        - name: HOME
+          value: /tmp/home
+        - name: NUGET_PACKAGES
+          value: /tmp/.nuget/packages
+        - name: VSCODE_DEFAULT_WORKSPACE
+          value: /projects/workspace-backend/workspace-backend.code-workspace
+      volumeMounts:
+        - name: nuget
+      endpoints:
+        - name: http-5122
+          targetPort: 5122
+          exposure: public
+          protocol: http
+        - name: https-7082
+          targetPort: 7082
+          exposure: public
+          protocol: https
+  - volume:
+      size: 1Gi
+    name: projects
+  - volume:
+      size: 2Gi
+    name: nuget

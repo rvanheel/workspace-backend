@@ -38,17 +38,15 @@ components:
         - name: nuget
           path: /tmp/.nuget/packages
       command:
-        - sleep
-        - infinity
+        - /bin/sh
+        - -lc
+        - >-
+          for i in $(seq 1 120); do if [ -f /idea-server/status-app/views/status.ejs ]; then perl -0pi -e 's/&link=<%= invitationLink %>"/&link=" + encodeURIComponent("<%= invitationLink %>")/g' /idea-server/status-app/views/status.ejs || true; break; fi; sleep 1; done; sleep infinity
       endpoints:
         - name: http-5122
           targetPort: 5122
           exposure: public
           protocol: http
-        - name: https-7082
-          targetPort: 7082
-          exposure: public
-          protocol: https
         - name: ssh-2222
           targetPort: 2222
           exposure: public
